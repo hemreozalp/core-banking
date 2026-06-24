@@ -31,7 +31,7 @@ public class Customer {
     private String email;
 
     @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
 
     @PrePersist
     protected void onCreate() {

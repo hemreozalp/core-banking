@@ -25,16 +25,16 @@ public class Account {
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
-    @Column(name = "iban", nullable = false, unique = true, length = 34)
+    @Column(nullable = false, unique = true, length = 34)
     private String iban;
 
-    @Column(name = "balance", nullable = false, precision = 15, scale = 4)
+    @Column(nullable = false, precision = 15, scale = 4)
     private BigDecimal balance = BigDecimal.ZERO;
 
-    @Column(name = "currency", nullable = false, length = 3)
+    @Column(nullable = false, length = 3)
     private String currency;
 
-    @Column(name = "status", nullable = false, length = 20)
+    @Column(nullable = false, length = 20)
     private String status = "ACTIVE";
 
     @Column(nullable = false, updatable = false)
