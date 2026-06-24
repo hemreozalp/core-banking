@@ -1,0 +1,19 @@
+CREATE TABLE customers (
+    id BIGSERIAL PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    identity_number VARCHAR(11) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE accounts (
+    id BIGSERIAL PRIMARY KEY,
+    customer_id BIGINT NOT NULL,
+    iban VARCHAR(34) NOT NULL UNIQUE,
+    balance NUMERIC(15,4) NOT NULL DEFAULT 0.0000,
+    currency VARCHAR(3) NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_customer FOREIGN KEY (customer_id) REFERENCES customers(id)
+);
