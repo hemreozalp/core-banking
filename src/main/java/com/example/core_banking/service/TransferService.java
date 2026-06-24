@@ -3,6 +3,10 @@ package com.example.core_banking.service;
 import com.example.core_banking.dto.MoneyTransferRequest;
 import com.example.core_banking.entity.Account;
 import com.example.core_banking.entity.Transaction;
+import com.example.core_banking.exception.AccountNotFoundException;
+import com.example.core_banking.exception.CrossCurrencyTransferNotAllowedException;
+import com.example.core_banking.exception.InsufficientBalanceException;
+import com.example.core_banking.exception.SameAccountTransferNotAllowedException;
 import com.example.core_banking.repository.AccountRepository;
 import com.example.core_banking.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,21 +24,21 @@ public class TransferService {
     public void transferMoney(MoneyTransferRequest request) {
 
         if (request.sourceIban().equals(request.targetIban())) {
-            throw new RuntimeException("Aynı hesaba transfer yapamazsınız!");
+            throw new SameAccountTransferNotAllowedException("Aynı hesaba transfer yapamazsınız!");
         }
 
         Account sourceAccount = accountRepository.findByIbanWithLock(request.sourceIban())
-                .orElseThrow(() -> new RuntimeException("Kaynak hesap bulunamadı"));
+                .orElseThrow(() -> new AccountNotFoundException("Kaynak hesap bulunamadı"));
 
         Account targetAccount = accountRepository.findByIbanWithLock(request.targetIban())
-                .orElseThrow(() -> new RuntimeException("Alıcı hesap bulunamadı!"));
+                .orElseThrow(() -> new AccountNotFoundException("Alıcı hesap bulunamadı!"));
 
         if (!sourceAccount.getCurrency().equals(targetAccount.getCurrency())) {
-            throw new RuntimeException("Farklı para birimleri arasında transfer henüz desteklenmiyor!");
+            throw new CrossCurrencyTransferNotAllowedException("Farklı para birimleri arasında transfer henüz desteklenmiyor!");
         }
 
         if (sourceAccount.getBalance().compareTo(request.amount()) < 0) {
-            throw new RuntimeException("Yetersiz bakiye!");
+            throw new InsufficientBalanceException("Yetersiz bakiye!");
         }
 
         sourceAccount.setBalance(sourceAccount.getBalance().subtract(request.amount()));

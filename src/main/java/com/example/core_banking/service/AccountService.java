@@ -3,6 +3,7 @@ package com.example.core_banking.service;
 import com.example.core_banking.dto.CreateAccountRequest;
 import com.example.core_banking.entity.Account;
 import com.example.core_banking.entity.Customer;
+import com.example.core_banking.exception.CustomerNotFoundException;
 import com.example.core_banking.repository.AccountRepository;
 import com.example.core_banking.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ public class AccountService {
     public Account createAccount(CreateAccountRequest request) {
 
         Customer customer = customerRepository.findById(request.customerId())
-                .orElseThrow(() -> new RuntimeException("Customer not found!"));
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found!"));
 
         Account account = new Account();
         account.setCustomer(customer);
