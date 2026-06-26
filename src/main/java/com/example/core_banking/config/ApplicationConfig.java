@@ -21,7 +21,7 @@ public class ApplicationConfig {
                 .build();
 
         UserDetails customer = User.builder()
-                .username("customer_1")
+                .username("12345678901")
                 .password("{noop}bakiye123")
                 .roles("CUSTOMER")
                 .build();

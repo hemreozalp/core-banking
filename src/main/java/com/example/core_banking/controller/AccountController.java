@@ -6,10 +6,8 @@ import com.example.core_banking.service.AccountService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/accounts")
@@ -23,5 +21,12 @@ public class AccountController {
         Account createdAccount = accountService.createAccount(request);
 
         return ResponseEntity.ok(createdAccount);
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('TELLER', 'AUDITOR', 'CUSTOMER')")
+    public ResponseEntity<Account> getAccountById(@PathVariable Long id) {
+        Account account = accountService.getAccountByIdWithSecurity(id);
+        return ResponseEntity.ok(account);
     }
 }
