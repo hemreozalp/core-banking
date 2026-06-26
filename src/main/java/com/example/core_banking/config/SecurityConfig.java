@@ -22,7 +22,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity // Kritik: Metod seviyesinde güvenlik (Ownership check) sağlar
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -33,20 +33,15 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // Token almak için giriş ucumuzu herkese açıyoruz
                         .requestMatchers("/api/auth/login").permitAll()
-
-                        // Yol haritandaki yeni kurumsal rollere göre kısıtlamalar:
-                        .requestMatchers(HttpMethod.POST, "/api/customers").hasRole("TELLER") // Gişe Görevlisi açar
+                        .requestMatchers(HttpMethod.POST, "/api/customers").hasRole("TELLER")
                         .requestMatchers(HttpMethod.POST, "/api/accounts").hasRole("TELLER")
                         .requestMatchers("/api/transfers").hasAnyRole("CUSTOMER", "TELLER")
-                        .requestMatchers("/api/audit/**").hasRole("AUDITOR") // Müfettiş ucu
+                        .requestMatchers("/api/audit/**").hasRole("AUDITOR")
 
                         .anyRequest().authenticated()
                 )
-                // Oturum yönetimini tamamen STATELESS yapıyoruz (Sunucuda session tutulmaz)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // Bizim yazdığımız JWT filtresini standart UsernamePassword filtresinin önüne koyuyoruz
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
